@@ -5,12 +5,25 @@
   "description": "This extension allows users to view opponents team quickly directly from the standings page.",
   "version": "1.0",
 
-  "browser_action": {
-    "default_icon": "icon.png",
-    "default_popup": "popup.html"
-  },
   "permissions": [
-    "activeTab",
-    "storage"
-  ]
+    "tabs",
+    "*://fantasy.premierleague.com/*"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["*://fantasy.premierleague.com/*"],
+      "css": ["style.css"],
+      "js": ["scripts/jquery.js", "scripts/helper.js"]
+    }
+  ],
+
+  "background": {
+    "scripts": ["scripts/background.js"]
+  },
+
+  "page_action": {
+    "default_icon": "images/icon.png",
+    "default_title" : "Get league stats!"
+  }
 }
