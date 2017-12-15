@@ -41,6 +41,7 @@ function getLeagueInfo(leagueUrl) {
       var state = {};
 
       state['name'] = teams[i]['entry_name'];
+      state['id'] = teams[i]['entry'];
       teamsState[i] = state;
 
       var teamUrl = "https://fantasy.premierleague.com/drf/entry/" + teams[i].entry + "/event/" + gwNumber + "/picks";
@@ -94,26 +95,119 @@ function getLeagueInfo(leagueUrl) {
   });
 }
 
+function buildTooltip(team) {
+  var played = team.played;
+  var playing = team.playing;
+  var notPlayed = team.notPlayed;
+
+  var played_body = '';
+  var playing_body = '';
+  var not_played_body = '';
+
+  var wrapper_start = `<div class="tooltip-text">`;
+  var wrapper_end =   `</div>`;
+
+  if (played.length > 0) {
+    var played_body_start = `<h3 class="tooltip-title">Played</h1>
+                            <table class="tooltip-table">
+                              <tbody>`;
+
+    var played_body_end =  `</tbody>
+                          </table>`;
+
+    played_body = played_body_start;
+
+    for (var i in played) {
+      var name = played[i].name;
+      var isCaptain = played[i].isCaptain;
+      if(played_body) {
+        if (isCaptain) {
+          played_body += `<tr><td><b>${name}</b></td</tr>`;
+        } else {
+          played_body += `<tr><td>${name}</td</tr>`;
+        }
+      }
+    }
+
+    played_body += played_body_end;
+  }
+
+  if (playing.length > 0) {
+    var playing_body_start = `<h3 class="tooltip-title">Playing</h1>
+                            <table class="tooltip-table">
+                              <tbody>`;
+
+    var playing_body_end =  `</tbody>
+                          </table>`;
+
+    playing_body = playing_body_start;
+
+    for (var i in playing) {
+      var name = playing[i].name;
+      var isCaptain = playing[i].isCaptain;
+      if(playing_body) {
+        if (isCaptain) {
+          playing_body += `<tr><td><b>${name}</b></td</tr>`;
+        } else {
+          playing_body += `<tr><td>${name}</td</tr>`;
+        }
+      }
+    }
+
+    playing_body += playing_body_end;
+  }
+
+  if (notPlayed.length > 0) {
+    var not_played_body_start = `<h3 class="tooltip-title">Not Played</h1>
+                            <table class="tooltip-table">
+                              <tbody>`;
+
+    var not_played_body_end =  `</tbody>
+                          </table>`;
+
+    not_played_body = not_played_body_start;
+
+    for (var i in notPlayed) {
+      var name = notPlayed[i].name;
+      var isCaptain = notPlayed[i].isCaptain;
+      if(not_played_body) {
+        if (isCaptain) {
+          not_played_body += `<tr><td><b>${name}</b></td</tr>`;
+        } else {
+          not_played_body += `<tr><td>${name}</td</tr>`;
+        }
+      }
+    }
+
+    not_played_body += not_played_body_end;
+  }
+
+  return wrapper_start + played_body + playing_body + not_played_body + wrapper_end;
+}
+
 window.addEventListener("ready", function() {
   console.log(teamsState);
+  var links = $('a[href^="/a/team/"]').splice(2);
+
+  for (var i in links) {
+    var link = links[i];
+    var team = teamsState[i];
+
+    var team_id = link.href.split('/').slice(-1)[0];
+    var str = `a[href="/a/team/${team_id}"]`;
+    var linkElem = $(str);
+
+    var content = buildTooltip(team);
+    linkElem.addClass('tooltip2')
+      .append(content);
+  }
+
 });
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    getInfo(request.url);
+    //getInfo(request.url);
     setTimeout(function() {
-      $('a[href^="/a/team/"]').addClass('tooltip2')
-      .append(`<div class="tooltiptext">
-                <h1>Played</h1>
-                <table>
-                  <tbody>
-                    <tr><td>Hazard</td</tr>
-                    <tr><td>Morata</td</tr>
-                    <tr><td>Salah</td</tr>
-                    <tr><td>Kane</td</tr>
-                    <tr><td>Grob</td</tr>
-                  </tbody>
-                </table>
-              </div>`);
+      getInfo(request.url);
     }, 5000);
 });
