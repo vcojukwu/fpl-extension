@@ -47,12 +47,24 @@ function getLeagueInfo(leagueUrl) {
       var teamUrl = "https://fantasy.premierleague.com/drf/entry/" + teams[i].entry + "/event/" + gwNumber + "/picks";
       $.get(teamUrl, function(data) {
         teamPicks = data.picks;
-
-        for(var j in teamPicks) {
+        $.each(teamPicks, function (j, item) {
           var currentSelection = teamPicks[j];
           var selectionIdIndex = currentSelection.element - 1;
           //if not benched
           var playerObj = playerInfo[selectionIdIndex];
+
+          var playerUrl = "https://fantasy.premierleague.com/drf/element-summary/" + currentSelection.element;
+          var points = 0;
+
+          $.ajaxSetup({async:false});
+          $.get(playerUrl, function(data) {
+            var point_categories = data.explain[0].explain;
+            for (var p in point_categories) {
+              points += point_categories[p].points;
+            }
+          });
+          $.ajaxSetup({async:true});
+
           var clubObj = clubs[playerObj.team -1];
 
           var current_fixture_id = clubObj['current_event_fixture'][0].id;
@@ -67,7 +79,8 @@ function getLeagueInfo(leagueUrl) {
 
           var obj = {
             name: playerObj['web_name'],
-            isCaptain: currentSelection['is_captain']
+            isCaptain: currentSelection['is_captain'],
+            points: points
           };
 
           if (!club_current_fixture.started) {
@@ -79,7 +92,7 @@ function getLeagueInfo(leagueUrl) {
                 playing.push(obj);
               }
           }
-        }
+        });
 
         state['played'] = played;
         state['playing'] = playing;
@@ -119,12 +132,13 @@ function buildTooltip(team) {
 
     for (var i in played) {
       var name = played[i].name;
+      var points = played[i].points;
       var isCaptain = played[i].isCaptain;
       if(played_body) {
         if (isCaptain) {
-          played_body += `<tr><td><b>${name}</b></td</tr>`;
+          played_body += `<tr><td><b>${name} (${points})</b></td</tr>`;
         } else {
-          played_body += `<tr><td>${name}</td</tr>`;
+          played_body += `<tr><td>${name} (${points})</td</tr>`;
         }
       }
     }
@@ -144,12 +158,13 @@ function buildTooltip(team) {
 
     for (var i in playing) {
       var name = playing[i].name;
+      var points = playing[i].points;
       var isCaptain = playing[i].isCaptain;
       if(playing_body) {
         if (isCaptain) {
-          playing_body += `<tr><td><b>${name}</b></td</tr>`;
+          playing_body += `<tr><td><b>${name} (${points})</b></td</tr>`;
         } else {
-          playing_body += `<tr><td>${name}</td</tr>`;
+          playing_body += `<tr><td>${name} (${points})</td</tr>`;
         }
       }
     }
