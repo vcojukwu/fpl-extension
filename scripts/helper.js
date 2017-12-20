@@ -181,18 +181,16 @@ window.addEventListener("ready", function() {
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    setTimeout(function() {
-      let leagueCode = request.url.split("/").slice(-2)[0];
+    let leagueCode = request.url.split("/").slice(-2)[0];
 
-      if(request.url.includes('classic')) {
-        leagueUrl = `https://fantasy.premierleague.com/drf/leagues-classic-standings/${leagueCode}`;
-      } else if (request.url.includes('h2h')) {
-        leagueUrl = `https://fantasy.premierleague.com/drf/leagues-h2h-standings/${leagueCode}`;
-      } else {
-        console.log('Unknown League Type');
-      }
-      getInfo();
-    }, 5000);
+    if(request.url.includes('classic')) {
+      leagueUrl = `https://fantasy.premierleague.com/drf/leagues-classic-standings/${leagueCode}`;
+    } else if (request.url.includes('h2h')) {
+      leagueUrl = `https://fantasy.premierleague.com/drf/leagues-h2h-standings/${leagueCode}`;
+    } else {
+      console.log('Unknown League Type');
+    }
+    getInfo();
 });
 
 
