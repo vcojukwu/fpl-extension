@@ -87,6 +87,7 @@ function getInfo() {
                   isCaptain,
                   points,
                   status,
+                  position: pick.position
                 };
 
                 if (teamsState[teamIndex]) {
@@ -109,6 +110,8 @@ function getInfo() {
 }
 
 function buildTooltip(team) {
+  team.sort((a, b) => a.position - b.position);
+
   let playedBody = '';
   let playingBody = '';
   let notPlayedBody = '';
