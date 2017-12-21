@@ -177,8 +177,20 @@ window.addEventListener("ready", function() {
 
     let content = buildTooltip(team);
 
+    let template = document.createElement('div');
+    template.innerHTML = content;
+    template = template.firstChild;
+
+    $("body").append(template);
+
     let teamId = link.href.split('/').slice(-1)[0];
-    $(`a[href="/a/team/${teamId}"]`).addClass('tooltip2').append(content);
+
+    tippy(document.querySelector(`a[href="/a/team/${teamId}"]`), {
+      html: template,
+      arrow: true,
+      placement: 'right',
+      distance: 20
+    });
   }
 });
 

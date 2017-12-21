@@ -13,8 +13,8 @@
   "content_scripts": [
     {
       "matches": ["*://fantasy.premierleague.com/*"],
-      "css": ["style.css"],
-      "js": ["scripts/jquery.js", "scripts/helper.js"]
+      "css": ["style.css", "tippy.css"],
+      "js": ["scripts/tippy.all.min.js", "scripts/jquery.js", "scripts/helper.js"]
     }
   ],
 

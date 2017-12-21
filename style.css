@@ -1,4 +1,4 @@
-.tooltip2 {
+/*.tooltip2 {
   position: relative;
   display: inline-block;
 }
@@ -11,8 +11,8 @@
   text-align: center;
   border-radius: 6px;
   position: absolute;
-  z-index: 5;
-  top: -80px;
+  z-index: 5000;
+  top: -150px;
   left: 105%;
   margin-left: 10px;
   opacity: 0;
@@ -52,4 +52,4 @@
 .table .tooltip-table td {
   padding: 0px 5px 5px 10px;
   border: none;
-}
+}*/
