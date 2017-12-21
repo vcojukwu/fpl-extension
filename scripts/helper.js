@@ -188,6 +188,7 @@ window.addEventListener("ready", function() {
     tippy(document.querySelector(`a[href="/a/team/${teamId}"]`), {
       html: template,
       arrow: true,
+      theme: 'light',
       placement: 'right',
       distance: 20
     });
