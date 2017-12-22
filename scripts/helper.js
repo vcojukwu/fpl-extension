@@ -139,13 +139,20 @@ function buildTooltip(team) {
   for (let player of team) {
     let notPlaying = false;
 
+    let isBench = player.position > 11;
+
     if (player.currentPlayingChance !== null) {
       notPlaying = player.currentPlayingChance < 100;
     }
 
-    let playerRow = notPlaying ? `<tr><td><s>${player.name} (${player.points})</s></td</tr>`
-                               : `<tr><td>${player.name} (${player.points})</td</tr>`;
-    let playerRowBold = `<tr><td><b>${player.name} (${player.points})</b></td</tr>`;
+    let playerRowStart = '<tr><td>';
+    let playerRowBody = `${player.name} (${player.points}) ${isBench ? '<i>B</i>' : ''}`;
+    let playerRowEnd = '</td></tr>';
+
+    let playerRow = notPlaying ? `${playerRowStart}<s>${playerRowBody}</s>${playerRowEnd}`
+                               : `${playerRowStart}${playerRowBody}${playerRowEnd}`;
+
+    let playerRowBold = `${playerRowStart}<b>${playerRowBody}</b>${playerRowEnd}`;
 
 
     switch (player.state) {
