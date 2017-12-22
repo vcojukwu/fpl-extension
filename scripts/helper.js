@@ -80,13 +80,15 @@ function getInfo() {
                 count++;
 
                 let clubFixture = getClubCurrentFixture(club);
-                let status = playingStatus(clubFixture);
+                let state = playingStatus(clubFixture);
 
                 let obj = {
                   name: player['web_name'],
                   isCaptain,
                   points,
-                  status,
+                  state,
+                  currentPlayingChance: player['chance_of_playing_this_round'],
+                  nextPlayingChance: player['chance_of_playing_next_round'],
                   position: pick.position
                 };
 
@@ -135,10 +137,18 @@ function buildTooltip(team) {
                     </table>`;
 
   for (let player of team) {
-    let playerRow = `<tr><td>${player.name} (${player.points})</td</tr>`;
+    let notPlaying = false;
+
+    if (player.currentPlayingChance !== null) {
+      notPlaying = player.currentPlayingChance < 100;
+    }
+
+    let playerRow = notPlaying ? `<tr><td><s>${player.name} (${player.points})</s></td</tr>`
+                               : `<tr><td>${player.name} (${player.points})</td</tr>`;
     let playerRowBold = `<tr><td><b>${player.name} (${player.points})</b></td</tr>`;
 
-    switch (player.status) {
+
+    switch (player.state) {
       case PLAYED:
         playedBody += player.isCaptain ? playerRowBold : playerRow;
         break;
