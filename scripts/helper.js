@@ -182,7 +182,7 @@ function buildTooltip(team) {
     notPlayedBody = notPlayedBodyStart + notPlayedBody + bodyEnd;
   }
 
-  return wrapperStart + playedBody + playingBody + notPlayedBody + wrapperEnd;
+  return wrapperStart + notPlayedBody + playingBody + playedBody + wrapperEnd;
 }
 
 window.addEventListener("ready", function() {
