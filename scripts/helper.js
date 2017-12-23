@@ -3,7 +3,7 @@ let gameWeekNumber;
 let gameWeekFixtures;
 let leagueUrl;
 let playersInformation;
-let teamsState = [];
+let teamsState = {};
 let count = 0;
 
 const NOTPLAYED = 1;
@@ -66,7 +66,8 @@ function getInfo() {
 
         teams.map(function(team) {
           let points;
-          let teamUrl = `https://fantasy.premierleague.com/drf/entry/${team.entry}/event/${gameWeekNumber}/picks`;
+          let entry = team.entry;
+          let teamUrl = `https://fantasy.premierleague.com/drf/entry/${entry}/event/${gameWeekNumber}/picks`;
           let teamIndex = team.rank - 1;
 
           getJSON(teamUrl).then((data) => {
@@ -92,10 +93,10 @@ function getInfo() {
                   position: pick.position
                 };
 
-                if (teamsState[teamIndex]) {
-                  teamsState[teamIndex].push(obj);
+                if (teamsState[entry]) {
+                  teamsState[entry].push(obj);
                 } else {
-                  teamsState[teamIndex] = [obj];
+                  teamsState[entry] = [obj];
                 }
 
                 if (count === teams.length * 15) {
@@ -190,8 +191,9 @@ window.addEventListener("ready", function() {
 
   for (let i = 0; i < links.length; i++) {
     let link = links[i];
-    let team = teamsState[i];
 
+    let teamId = link.href.split('/').slice(-1)[0];
+    let team = teamsState[teamId];
     let content = buildTooltip(team);
 
     let template = document.createElement('div');
@@ -199,8 +201,6 @@ window.addEventListener("ready", function() {
     template = template.firstChild;
 
     $("body").append(template);
-
-    let teamId = link.href.split('/').slice(-1)[0];
 
     tippy(document.querySelector(`a[href="/a/team/${teamId}"]`), {
       html: template,
