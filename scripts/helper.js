@@ -5,6 +5,8 @@ let leagueUrl;
 let playersInformation;
 let teamsState = {};
 let count = 0;
+let previousLinks;
+let interval;
 
 const NOTPLAYED = 1;
 const PLAYING = 2;
@@ -100,8 +102,7 @@ function getInfo() {
                 }
 
                 if (count === teams.length * 15) {
-                  let event = new Event('ready');
-                  window.dispatchEvent(event);
+                  startup();
                 }
               });
             });
@@ -185,9 +186,13 @@ function buildTooltip(team) {
   return wrapperStart + notPlayedBody + playingBody + playedBody + wrapperEnd;
 }
 
-window.addEventListener("ready", function() {
+function startup() {
   console.log(teamsState);
   let links = $('a[href^="/a/team/"]').splice(2);
+
+  if (links.length > 0) {
+    clearInterval(interval);
+  }
 
   for (let i = 0; i < links.length; i++) {
     let link = links[i];
@@ -210,20 +215,25 @@ window.addEventListener("ready", function() {
       distance: 20
     });
   }
-});
+}
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    let leagueCode = request.url.split("/").slice(-2)[0];
+    if (Object.keys(teamsState).length === 0) {
+      let leagueCode = request.url.split("/").slice(-2)[0];
 
-    if(request.url.includes('classic')) {
-      leagueUrl = `https://fantasy.premierleague.com/drf/leagues-classic-standings/${leagueCode}`;
-    } else if (request.url.includes('h2h')) {
-      leagueUrl = `https://fantasy.premierleague.com/drf/leagues-h2h-standings/${leagueCode}`;
-    } else {
-      console.log('Unknown League Type');
-    }
-    getInfo();
+      if(request.url.includes('classic')) {
+        leagueUrl = `https://fantasy.premierleague.com/drf/leagues-classic-standings/${leagueCode}`;
+      } else if (request.url.includes('h2h')) {
+        leagueUrl = `https://fantasy.premierleague.com/drf/leagues-h2h-standings/${leagueCode}`;
+      } else {
+        console.log('Unknown League Type');
+      }
+      getInfo();
+   } else {
+    startup();
+    interval = interval || setInterval(startup, 5000);
+   }
 });
 
 
