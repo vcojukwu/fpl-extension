@@ -7,6 +7,8 @@ let teamsState = {};
 let count = 0;
 let previousLinks;
 let interval;
+let players = {}
+let running = false;
 
 const NOTPLAYED = 1;
 const PLAYING = 2;
@@ -74,9 +76,15 @@ function getInfo() {
 
           getJSON(teamUrl).then((data) => {
             data.picks.map((pick) => {
-              let player = playersInformation[pick.element - 1];
+              let playerId = pick.element - 1;
+
+              let player = playersInformation[playerId];
               let club = clubs[player.team - 1];
               let isCaptain = pick['is_captain'];
+
+              if (!players.hasOwnProperty(playerId)) {
+                players[playerId] = 0;
+              }
 
               calculatePoints(pick.element).then((result) => {
                 points = result;
@@ -100,7 +108,6 @@ function getInfo() {
                 } else {
                   teamsState[entry] = [obj];
                 }
-
                 if (count === teams.length * 15) {
                   startup();
                 }
@@ -192,6 +199,7 @@ function startup() {
 
   if (links.length > 0) {
     clearInterval(interval);
+    interval = null;
   }
 
   for (let i = 0; i < links.length; i++) {
@@ -219,7 +227,8 @@ function startup() {
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (Object.keys(teamsState).length === 0) {
+    if (Object.keys(teamsState).length === 0 && !running) {
+      running = true;
       let leagueCode = request.url.split("/").slice(-2)[0];
 
       if(request.url.includes('classic')) {
